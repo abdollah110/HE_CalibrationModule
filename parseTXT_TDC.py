@@ -191,10 +191,10 @@ def Measure_Integral(Fname1,Fname2,Title, XaxisT,low,high,freq,RootName):
 #    xIntegral_RMS=[]
 #    yIntegral_RMS=[]
 
-    LINK=[15]
+    LINK=[19]
 #    LINK=[15,16,17,18,19]
 #    LINKkChannel=[0,1,2,3,4,5]
-    LINKkChannel=[4]
+    LINKkChannel=[2]
     for linkChannel in LINKkChannel:
         for link in LINK:
             xIntegral=array("d",xrange(0,FNumber))
@@ -228,29 +228,13 @@ def Measure_Integral(Fname1,Fname2,Title, XaxisT,low,high,freq,RootName):
 
 
                 for event in xrange(0,995):
-                    pedSum=0
-                    sigSum=0
-                    Signal=0
-                    Pedestal=0
+                    tdcValue=0
                     for BX in xrange(0, 40):
-        #                print "[event][link][BX][linkChannel] = ", event,"  "  ,link,"  "  , BX ,"  "  ,linkChannel, "---->data[event][link][BX][linkChannel]", tdc[event][link][BX][linkChannel]
-            #            print BX
-            #            print event
-            #            print "data=", data[event][link][BX][linkChannel]
-        #                print "TDC=", tdc[event][link][BX][linkChannel]
-            #            print "\n"
-        #                print "@@@@@@@@------->     [event] ", event
-                        tdcValue=tdc[event][link][BX][linkChannel]
-        #                print "@@@@@@@@------->     [event] ", event
-                        if (iAmp <= 10 and BX==20 and tdc[event][link][BX][linkChannel] !=31.5) : sigSum += tdcValue ;
-                        if (iAmp > 10 and BX==21 and tdc[event][link][BX][linkChannel] !=31.5) : sigSum += tdcValue ;
-        #                    print "[event][link][BX][linkChannel] = ", event,"  "  ,link,"  "  , BX ,"  "  ,linkChannel, "---->data[event][link][BX][linkChannel]", tdc[event][link][BX][linkChannel]
-        #                if BX > 19 and  BX < 25: sigSum += adcValue
-        #                if BX > 18 and BX < 26: print "[event][link][BX][linkChannel] = ", event,"  "  ,link,"  "  , BX ,"  "  ,linkChannel, "---->data[event][link][BX][linkChannel]", data[event][link][BX][linkChannel]
 
+                        if (iAmp <= 10 and BX==20 and tdc[event][link][BX][linkChannel] !=31.5) : tdcValue=tdc[event][link][BX][linkChannel]
+                        if (iAmp > 10  and BX==21 and tdc[event][link][BX][linkChannel] !=31.5) : tdcValue=tdc[event][link][BX][linkChannel]
 
-                    print "---------------------> sigSum= ",sigSum
-                    y[event]= sigSum
+                    y[event]= tdcValue
                     M.Fill(y[event])
 
                 histMean= M.GetMean()
@@ -261,7 +245,7 @@ def Measure_Integral(Fname1,Fname2,Title, XaxisT,low,high,freq,RootName):
                 highValAx = histMean + 6 * histRMS
                 lowValAx = histMean - 6 * histRMS
 
-                canvas = MakeCanvas("asdf","asdf",800,800)
+                canvas = MakeCanvas("can","can",800,800)
                 canvas.Update()
                 MyGr= TGraph(len(x), x,y)
                 mfit=TF1("fit", "gaus", lowVal,highVal)
@@ -282,7 +266,6 @@ def Measure_Integral(Fname1,Fname2,Title, XaxisT,low,high,freq,RootName):
 
                 M.SetMarkerStyle(22)
                 M.GetXaxis().SetRangeUser(0,30)
-        #        M.GetXaxis().SetRangeUser(lowValAx,highValAx)
 
                 M.SetTitle("TDC v.s. Delay Setting (ns)")
                 M.Draw("pe")
@@ -299,7 +282,7 @@ def Measure_Integral(Fname1,Fname2,Title, XaxisT,low,high,freq,RootName):
                 fitInfo.AddText("Delay Setting =" + str(iAmp))
                 fitInfo.AddText("link  =" + str(link) +"  channel="+str(linkChannel))
                 fitInfo.Draw()
-                canvas.SaveAs("HistoSingleRun_"+str(iAmp)+"_"+Title+"_TDC"+str(link)+"_ch_"+str(linkChannel)+".pdf")
+                canvas.SaveAs("outHistoSingleRun_"+RootName+str(iAmp)+"_link"+str(link)+"_ch_"+str(linkChannel)+".pdf")
 
 
 
@@ -324,86 +307,45 @@ def Measure_Integral(Fname1,Fname2,Title, XaxisT,low,high,freq,RootName):
         #        xIntegral_RMS.append(iAmp)
         #        yIntegral_RMS.append(integral_RMS)
 
-            Graph_Integral= TGraph(len(xIntegral), xIntegral,yIntegral)
-            Graph_IntegralErUp= TGraph(len(xIntegral), xIntegral,yIntegralErrUp)
-            Graph_IntegralErDown= TGraph(len(xIntegral), xIntegral,yIntegralErrDown)
+            Graph_TDC= TGraph(len(xIntegral), xIntegral,yIntegral)
+            Graph_TDCErUp= TGraph(len(xIntegral), xIntegral,yIntegralErrUp)
+            Graph_TDCErDown= TGraph(len(xIntegral), xIntegral,yIntegralErrDown)
             
-            canvas_Integral = MakeCanvas("can1","can1",800,800)
-        #    canvas_Integral.SetLogy()
-            Graph_Integral.SetTitle("TDC vs. Pulse  "+Title)
-            Graph_Integral.SetMarkerStyle(22)
-            Graph_Integral.SetMarkerColor(3)
-            Graph_Integral.SetMarkerSize(2)
-            Graph_Integral.GetXaxis().SetTitle(XaxisT)
-            Graph_Integral.GetYaxis().SetRangeUser(0, 30)
-            print "%%%%%%%% Graph_Integral.GetMaximum()= ", TMath.MaxElement(len(xIntegral_RMS),Graph_Integral.GetY())
-        #    Graph_Integral.SetMaximum(1.5)
-            Graph_Integral.Draw()
-            Graph_IntegralErUp.Draw("same")
-            Graph_IntegralErDown.Draw("same")
-            canvas_Integral.SaveAs("Integral_"+Title+"_TDC"+str(link)+"_ch_"+str(linkChannel)+".pdf")
+            canvas_TDC = MakeCanvas("can1","can1",800,800)
+            Graph_TDC.SetTitle("TDC vs. Pulse  "+Title)
+            Graph_TDC.SetMarkerStyle(22)
+            Graph_TDC.SetMarkerColor(3)
+            Graph_TDC.SetMarkerSize(2)
+            Graph_TDC.GetXaxis().SetTitle(XaxisT)
+            Graph_TDC.GetYaxis().SetRangeUser(0, 30)
+            Graph_TDC.Draw()
+            Graph_TDCErUp.Draw("same")
+            Graph_TDCErDown.Draw("same")
+            canvas_TDC.SaveAs("outHisto_"+RootName+"_link"+str(link)+"_ch_"+str(linkChannel)+".pdf")
 
-#            Graph_Integral_RMS= TGraph(len(xIntegral_RMS), xIntegral_RMS,yIntegral_RMS)
-#            Graph_Integral_RMSErUp= TGraph(len(xIntegral_RMS), xIntegral_RMS,yIntegral_RMSErrUp)
-#            Graph_Integral_RMSErDown= TGraph(len(xIntegral_RMS), xIntegral_RMS,yIntegral_RMSErrDown)
+            Graph_TDC_RMS= TGraph(len(xIntegral_RMS), xIntegral_RMS,yIntegral_RMS)
+            Graph_TDC_RMSErUp= TGraph(len(xIntegral_RMS), xIntegral_RMS,yIntegral_RMSErrUp)
+            Graph_TDC_RMSErDown= TGraph(len(xIntegral_RMS), xIntegral_RMS,yIntegral_RMSErrDown)
 
-#            canvas_Integral_RMS = MakeCanvas("can2","can2",800,800)
-#            Graph_Integral_RMS.SetTitle("TDC RMS vs. Pulse  "+Title)
-#            Graph_Integral_RMS.SetMarkerStyle(23)
-#            Graph_Integral_RMS.SetMarkerColor(2)
-#            Graph_Integral_RMS.SetMarkerSize(2)
-#            Graph_Integral_RMS.GetXaxis().SetTitle(XaxisT)
-#            Graph_Integral_RMS.GetYaxis().SetRangeUser(0,2)
-#            Graph_Integral_RMS.Draw()
-#            Graph_Integral_RMSErUp.Draw("same")
-#            Graph_Integral_RMSErDown.Draw("same")
-#            canvas_Integral_RMS.SaveAs("Integral_RMS_"+Title+"_TDC"+str(link)+"_ch_"+str(linkChannel)+".pdf")
-#
-#
-#            Graph_Ratio= TGraph(len(xRatio), xRatio,yRatio)
-#            canvas_Ratio = MakeCanvas("can2","can2",800,800)
-#            Graph_Ratio.SetTitle("Ratio of TDC RMS and TDC  "+Title)
-#            Graph_Ratio.SetMarkerStyle(21)
-#            Graph_Ratio.SetMarkerColor(4)
-#            Graph_Ratio.SetMarkerSize(2)
-#            Graph_Ratio.GetXaxis().SetTitle(XaxisT)
-#            Graph_Ratio.GetYaxis().SetRangeUser(TMath.MinElement(len(xIntegral_RMS),Graph_Ratio.GetY())/2, TMath.MaxElement(len(xIntegral_RMS),Graph_Ratio.GetY()) * 1.5)
-#            Graph_Ratio.Draw()
-#            canvas_Ratio.SaveAs("Ratio_"+Title+"_TDC"+str(link)+"_ch_"+str(linkChannel)+".pdf")
-#
-            OutFile=TFile(RootName,"RECREATE")
-            OutFile.WriteObject(Graph_Integral,"Graph_Integral")
-#            OutFile.WriteObject(Graph_Integral_RMS,"Graph_Integral_RMS")
-#            OutFile.WriteObject(Graph_Ratio,"Graph_Ratio")
+            canvas_TDC_RMS = MakeCanvas("can2","can2",800,800)
+            Graph_TDC_RMS.SetTitle("TDC RMS vs. Pulse  "+Title)
+            Graph_TDC_RMS.SetMarkerStyle(23)
+            Graph_TDC_RMS.SetMarkerColor(2)
+            Graph_TDC_RMS.SetMarkerSize(2)
+            Graph_TDC_RMS.GetXaxis().SetTitle(XaxisT)
+            Graph_TDC_RMS.GetYaxis().SetRangeUser(0,2)
+            Graph_TDC_RMS.Draw()
+            Graph_TDC_RMSErUp.Draw("same")
+            Graph_TDC_RMSErDown.Draw("same")
+            canvas_TDC_RMS.SaveAs("outHistoRMS_"+RootName+"_link"+str(link)+"_ch_"+str(linkChannel)+".pdf")
+
+
+            OutFile=TFile("outFile_"+RootName+"_link"+str(link)+"_ch_"+str(linkChannel)+".root","RECREATE")
+            OutFile.WriteObject(Graph_TDC,"Graph_TDC")
+            OutFile.WriteObject(Graph_TDC_RMS,"Graph_TDC_RMS")
             OutFile.Close()
 
 
-
-#OutFile.WriteObject(M,"MMM")
-#OutFile.WriteObject(MyGr,"gr")
-
-
-
-#Fname1="TuesdayDec1st_AMP/TU_0p"
-#Fname2="_10.txt"
-#Title="Height"
-#XaxisT="height * 0.1"
-#low=2
-#high=11
-#freq=1
-#RootName="tdc_vs_amplitude.root"
-#Measure_Integral(Fname1,Fname2, Title, XaxisT,low,high,freq,RootName)
-
-    
-#Fname1="TuesdayDec1st_WID/TU_WID_0p5_"
-#Fname2=".txt"
-#Title="Width"
-#XaxisT="Width"
-#low=4
-#high=26
-#freq=2
-#RootName="tdc_vs_width.root"
-#Measure_Integral(Fname1,Fname2, Title, XaxisT,low,high,freq,RootName)
 
 
 ##########################################################################################
@@ -413,57 +355,57 @@ Do_TDC=0
 if Do_TDC:
     
     #Fname1="FullDec8/Dec8_TDC8_AMP/TU_tdc8_amp"
-    Fname1="Friday18Dec_TDCtest/FR_Dec18_WID10_Shunt0_TDC8_AMP"
+    Fname1="_MON_Feb29_TDCvsAPM_Shunt_TDCTHR/MON_Feb29_WID10_Delay3_Sunt1_TDCThre8_AMP"
     Fname2=".txt"
     Title="Height"
     XaxisT="height * 0.1"
     low=4
-    high=10
-    freq=2
-    RootName="outRoot_TDC8.root"
+    high=11
+    freq=1
+    RootName="WID10_Delay3_Sunt1_TDCThre8_AMP"
     Measure_Integral(Fname1,Fname2, Title, XaxisT,low,high,freq,RootName)
 
     #Fname1="FullDec8/Dec8_TDC128_AMP/TU_tdc128_amp"
-    Fname1="Friday18Dec_TDCtest/FR_Dec18_WID10_Shunt0_TDC128_AMP"
+    Fname1="_MON_Feb29_TDCvsAPM_Shunt_TDCTHR/MON_Feb29_WID10_Delay3_Sunt1_TDCThre128_AMP"
     Fname2=".txt"
     Title="Height"
     XaxisT="height * 0.1"
     low=4
-    high=10
-    freq=2
-    RootName="outRoot_TDC128.root"
+    high=11
+    freq=1
+    RootName="WID10_Delay3_Sunt1_TDCThre128_AMP"
     Measure_Integral(Fname1,Fname2, Title, XaxisT,low,high,freq,RootName)
 
     #Fname1="FullDec8/Dec8_TDC248_AMP/TU_tdc248_amp"
-    Fname1="Friday18Dec_TDCtest/FR_Dec18_WID10_Shunt0_TDC200_AMP"
+    Fname1="_MON_Feb29_TDCvsAPM_Shunt_TDCTHR/MON_Feb29_WID10_Delay3_Sunt1_TDCThre200_AMP"
     Fname2=".txt"
     Title="Height"
     XaxisT="height * 0.1"
     low=4
-    high=10
-    freq=2
-    RootName="outRoot_TDC200.root"
+    high=11
+    freq=1
+    RootName="WID10_Delay3_Sunt1_TDCThre200_AMP"
     Measure_Integral(Fname1,Fname2, Title, XaxisT,low,high,freq,RootName)
 
 
 ##########################################################################################
 # This part is used for the computation of the Time vs Amplitude for different Shunt Values
 ##########################################################################################
-Do_Shunt=0
+Do_Shunt=1
 if Do_Shunt:
-    Fname1="Friday18Dec_TDCtest/FR_Dec18_WID10_Shunt0_TDC8_AMP"
+    Fname1="_MON_Feb29_TDCvsAPM_Shunt_TDCTHR/MON_Feb29_WID10_Delay3_TDCThre8_Sunt1_AMP"
     Fname2=".txt"
     Title="Height"
     XaxisT="height * 0.1"
     low=4
     high=10
     freq=1
-    RootName="outRoot_Shunt0.root"
+    RootName="WID10_Delay3_TDCThre8_Sunt1_AMP"
     Measure_Integral(Fname1,Fname2, Title, XaxisT,low,high,freq,RootName)
 
 
 
-    Fname1="Friday18Dec_TDCtest/FR_Dec18_WID10_Shunt16_TDC8_AMP"
+    Fname1="_MON_Feb29_TDCvsAPM_Shunt_TDCTHR/MON_Feb29_WID10_Delay3_TDCThre8_Sunt1Over6_AMP"
     Fname2=".txt"
 
     Title="Height"
@@ -471,26 +413,26 @@ if Do_Shunt:
     low=4
     high=10
     freq=1
-    RootName="outRoot_Shunt16.root"
+    RootName="WID10_Delay3_TDCThre8_Sunt1Over6_AMP"
     Measure_Integral(Fname1,Fname2, Title, XaxisT,low,high,freq,RootName)
 
 
     #Fname1="FullDec8/Dec8_Shunt30_AMP/TU_Shunt30_amp"
-    Fname1="Friday18Dec_TDCtest/FR_Dec18_WID10_Shunt30_TDC8_AMP"
+    Fname1="_MON_Feb29_TDCvsAPM_Shunt_TDCTHR/MON_Feb29_WID10_Delay3_TDCThre8_Sunt1Over11_AMP"
     Fname2=".txt"
     Title="Height"
     XaxisT="height * 0.1"
     low=4
     high=10
     freq=1
-    RootName="outRoot_Shunt30.root"
+    RootName="WID10_Delay3_TDCThre8_Sunt1Over11_AMP"
     Measure_Integral(Fname1,Fname2, Title, XaxisT,low,high,freq,RootName)
 
 
     ##########################################################################################
     # This part is used for the computation of the Time vs Amplitude for different for different delay setting
     ##########################################################################################
-Do_Delay=1
+Do_Delay=0
 if Do_Delay:
     Fname1="_FRI_Feb26_TDC_vs_Delay/FRI_Feb26_TDCThre8_Sunt1_AMP8_WID10_Delay"
     Fname2=".txt"
