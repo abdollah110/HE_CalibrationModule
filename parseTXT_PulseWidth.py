@@ -165,16 +165,18 @@ def getTDCValues(f):
 
 
 
+
 def Measure_Integral(Fname1,Fname2,Title, XaxisT,low,high,freq,RootName):
 
     FNumber=int((high-low)/freq)
-    
+
     LINK=[19]
     #    LINK=[15,16,17,18,19]
     #    LINKkChannel=[0,1,2,3,4,5]
     LINKkChannel=[2]
     for linkChannel in LINKkChannel:
         for link in LINK:
+
             xIntegral=array("d",xrange(0,FNumber))
             yIntegral=array("d",xrange(0,FNumber))
             yIntegralErrUp=array("d",xrange(0,FNumber))
@@ -187,81 +189,75 @@ def Measure_Integral(Fname1,Fname2,Title, XaxisT,low,high,freq,RootName):
             yRatio=array("d",xrange(0,FNumber))
             xSingleEv=array("d",xrange(0,40))
             ySingleEv=array("d",xrange(0,40))
+            
             num=-1
             for iAmp in range(low,high,freq):
                 num+=1
                 Fname=Fname1+str(iAmp)+Fname2
-                print "*************  -> initiating      The ", Fname , " and number of files exist= ", FNumber
-                print "-------------------->  Now is doing ....  ", low, "  ____ ", Fname
-                
-                
+
                 f = open(Fname)
                 data = getData(f)
-#                tdc = getTDCValues(f)
 
-                M=TH1F(Fname,Fname,2000,0,1000000)
+                M=TH1F(Fname,Fname,200,0.4,1.4)
+                M.SetDefaultSumw2()
                 x = array("d", xrange(0,1001))
                 y = array("d", xrange(0,1001))
-                
-                
-                for event in xrange(0,995):
-    
-    
-    
-                    pedSum=0
-                    sigSum=0
-                    Signal=0
-                    Pedestal=0
-                    for BX in xrange(0, 40):
 
-                        adcValue=data[event][link][BX][linkChannel]
-                        if BX < 15 : pedSum += adcValue
-                        if BX > 19 and  BX < 25: sigSum += adcValue
+
+                for event in xrange(0,995):
+                    for BX in xrange(0, 40):
+                        
                         xSingleEv[BX]=BX
-                        ySingleEv[BX]=adcValue
+                        ySingleEv[BX]=data[event][link][BX][linkChannel]
                 
                     scanvas = MakeCanvas("mm","nn",800,800)
                     GrSingleEv=TGraph(len(xSingleEv),xSingleEv,ySingleEv)
+
                     SFit=TF1("fit", "gaus", 19,23)
-                    SFit.SetParameter(0, 4000)
+                    SFit.SetParameter(0, 250)
                     SFit.SetParameter(1, 20.9)
-                    SFit.SetParLimits(1, 20, 22)
-                    SFit.SetParameter(2, 1.5)
+        #            SFit.SetParLimits(1, 20, 22)
+                    SFit.SetParameter(2, 1)
                     GrSingleEv.Draw("AC*")
                     GrSingleEv.Fit("fit","R0")
                     SFit.Draw("same")
                     FitParam=SFit.GetParameters()
                     print "Gaus fit param 1, 2, 3= " , round(FitParam[0],4), round(FitParam[1],4), round(FitParam[2],4)
-        #            scanvas.SaveAs("singleEv_"+str(iAmp)+"_"+str(event)+".pdf")
+        #            scanvas.SaveAs("PLOT/singleEv_"+str(iAmp)+"_"+str(event)+str(RootName)+".pdf")
 
-                    Pedestal=pedSum/15.
-                    y[event]= sigSum- Pedestal*5
-                    M.Fill(y[event])
 
-                histMean= M.GetMean()
-                histRMS= M.GetStdDev()
+                    M.Fill(round(FitParam[2],4))
 
-                highVal = histMean + 4 * histRMS
-                lowVal = histMean - 4 * histRMS
-                highValAx = histMean + 6 * histRMS
-                lowValAx = histMean - 6 * histRMS
+                histMean= M.GetMean() ;  print "-=====>  histMean=  ", histMean
+                histRMS= M.GetStdDev();  print "-=====>  histRMS=  ", histRMS
+
+                highVal = histMean + 5 * histRMS
+                lowVal = histMean - 5 * histRMS
+        #        highValAx = histMean + 6 * histRMS
+        #        lowValAx = histMean - 6 * histRMS
 
                 canvas = MakeCanvas("asdf","asdf",800,800)
                 canvas.Update()
                 MyGr= TGraph(len(x), x,y)
-                mfit=TF1("fit", "gaus", lowVal,highVal)
-                M.Fit(mfit, "R0","")
+                mfit=TF1("Nfit", "gaus", lowVal,highVal)
+                M.Fit("Nfit", "R0")
                 FitParam=mfit.GetParameters()
         #        FitParErr=mfit.GetParError()
                 integral= round(FitParam[1],4)
                 integral_RMS= round(FitParam[2],4)
                 integralErr= round(mfit.GetParError(1),4)
                 integral_RMSErr= round(mfit.GetParError(2),4)
-                print "iAmp=", iAmp, "   integral= ", integral,  "   integral_RMS=", integral_RMS
+                if ( abs(histMean - FitParam[1])/ histMean > 0.1):
+                    integral= histMean
+                    integral_RMS= histRMS
+                    integralErr= 0.00001
+                    integral_RMSErr= 0.00001
+                
+                print "iAmp=", iAmp, "   integral= ", integral,  "   integral_RMS=", integral_RMS, "  integralErr=",integralErr, "   integral_RMSErr=", integral_RMSErr
 
 
                 M.SetMarkerStyle(22)
-                M.GetXaxis().SetRangeUser(lowValAx,highValAx)
+                M.GetXaxis().SetRangeUser(0,2)
                 
                 M.SetTitle(Title+" = "+str(iAmp))
                 M.Draw("pe")
@@ -273,8 +269,8 @@ def Measure_Integral(Fname1,Fname2,Title, XaxisT,low,high,freq,RootName):
                 fitInfo.SetTextSize ( 0.03 );
                 fitInfo.SetTextColor(    1 );
                 fitInfo.SetTextFont (   62 );
-                fitInfo.AddText("Mean of Fit=" + str(round(FitParam[1],1)))
-                fitInfo.AddText("RMS of Fit =" + str(round(FitParam[2],1)))
+                fitInfo.AddText("Mean of Fit=" + str(round(FitParam[1],3)))
+                fitInfo.AddText("RMS of Fit =" + str(round(FitParam[2],3)))
                 fitInfo.Draw()
                 canvas.SaveAs("HistoSingleRun_"+str(iAmp)+"_"+Title+RootName+"_link"+str(link)+"_ch_"+str(linkChannel)+".pdf")
 
@@ -293,54 +289,66 @@ def Measure_Integral(Fname1,Fname2,Title, XaxisT,low,high,freq,RootName):
                 xRatio[num]=iAmp
                 yRatio[num]=integral_RMS/integral
 
+        #---------------------------------------------------------------------------------------------------------
 
-
-            Graph_Integral= TGraph(len(xIntegral), xIntegral,yIntegral)
-            Graph_IntegralErUp= TGraph(len(xIntegral), xIntegral,yIntegralErrUp)
-            Graph_IntegralErDown= TGraph(len(xIntegral), xIntegral,yIntegralErrDown)
+            Graph_PulseWidth= TGraph(len(xIntegral), xIntegral,yIntegral)
+            Graph_PulseWidthErUp= TGraph(len(xIntegral), xIntegral,yIntegralErrUp)
+            Graph_PulseWidthErDown= TGraph(len(xIntegral), xIntegral,yIntegralErrDown)
             
             canvas_Integral = MakeCanvas("can1","can1",800,800)
-            Graph_Integral.SetTitle("Pulse Integral vs. Pulse  "+Title)
-            Graph_Integral.SetMarkerStyle(22)
-            Graph_Integral.SetMarkerColor(3)
-            Graph_Integral.SetMarkerSize(2)
-            Graph_Integral.GetXaxis().SetTitle(XaxisT)
-            Graph_Integral.Draw()
-            Graph_IntegralErUp.Draw("same")
-            Graph_IntegralErDown.Draw("same")
+            Graph_PulseWidth.SetTitle("Pulse Width  vs. Pulse  "+Title + " Setting")
+            Graph_PulseWidth.SetMarkerStyle(22)
+            Graph_PulseWidth.SetMarkerColor(3)
+            Graph_PulseWidth.SetMarkerSize(2)
+            Graph_PulseWidth.GetXaxis().SetTitle(XaxisT)
+            Graph_PulseWidth.GetYaxis().SetTitle("(BX = ) x 25 [ns]")
+            Graph_PulseWidth.GetYaxis().SetLabelSize(0.035)
+            Graph_PulseWidth.GetYaxis().SetTitleOffset(2)
+            Graph_PulseWidth.GetYaxis().SetRangeUser(0 , 2)
+            Graph_PulseWidth.Draw()
+            Graph_PulseWidthErUp.Draw("same")
+            Graph_PulseWidthErDown.Draw("same")
             canvas_Integral.SaveAs("Integral_"+Title+RootName+"_link"+str(link)+"_ch_"+str(linkChannel)+".pdf")
+            
 
-            Graph_Integral_RMS= TGraph(len(xIntegral_RMS), xIntegral_RMS,yIntegral_RMS)
-            Graph_Integral_RMSErUp= TGraph(len(xIntegral_RMS), xIntegral_RMS,yIntegral_RMSErrUp)
-            Graph_Integral_RMSErDown= TGraph(len(xIntegral_RMS), xIntegral_RMS,yIntegral_RMSErrDown)
+            Graph_PulseWidth_RMS= TGraph(len(xIntegral_RMS), xIntegral_RMS,yIntegral_RMS)
+            Graph_PulseWidth_RMSErUp= TGraph(len(xIntegral_RMS), xIntegral_RMS,yIntegral_RMSErrUp)
+            Graph_PulseWidth_RMSErDown= TGraph(len(xIntegral_RMS), xIntegral_RMS,yIntegral_RMSErrDown)
 
             canvas_Integral_RMS = MakeCanvas("can2","can2",800,800)
-            Graph_Integral_RMS.SetTitle("Pulse Integral RMS vs. Pulse  "+Title)
-            Graph_Integral_RMS.SetMarkerStyle(23)
-            Graph_Integral_RMS.SetMarkerColor(2)
-            Graph_Integral_RMS.SetMarkerSize(2)
-            Graph_Integral_RMS.GetXaxis().SetTitle(XaxisT)
-            Graph_Integral_RMS.Draw()
-            Graph_Integral_RMSErUp.Draw("same")
-            Graph_Integral_RMSErDown.Draw("same")
+            Graph_PulseWidth_RMS.SetTitle("Pulse Width  RMS vs. Pulse  "+Title+ " Setting")
+            Graph_PulseWidth_RMS.SetMarkerStyle(23)
+            Graph_PulseWidth_RMS.SetMarkerColor(2)
+            Graph_PulseWidth_RMS.SetMarkerSize(2)
+            Graph_PulseWidth_RMS.GetXaxis().SetTitle(XaxisT)
+            Graph_PulseWidth_RMS.GetYaxis().SetTitle("(BX = ) x 25 [ns]")
+            Graph_PulseWidth_RMS.GetYaxis().SetLabelSize(0.035)
+            Graph_PulseWidth_RMS.GetYaxis().SetTitleOffset(2)
+            Graph_PulseWidth_RMS.GetYaxis().SetRangeUser(0,0.1)
+            Graph_PulseWidth_RMS.Draw()
+            Graph_PulseWidth_RMSErUp.Draw("same")
+            Graph_PulseWidth_RMSErDown.Draw("same")
             canvas_Integral_RMS.SaveAs("Integral_RMS_"+Title+RootName+"_link"+str(link)+"_ch_"+str(linkChannel)+".pdf")
 
 
             Graph_Ratio= TGraph(len(xRatio), xRatio,yRatio)
             canvas_Ratio = MakeCanvas("can2","can2",800,800)
-            Graph_Ratio.SetTitle("Ratio of Pulse Integral RMS and Pulse Integral  "+Title)
+            Graph_Ratio.SetTitle("Ratio of Pulse Width  RMS and Pulse Width   "+Title+ " Setting")
             Graph_Ratio.SetMarkerStyle(21)
             Graph_Ratio.SetMarkerColor(8)
             Graph_Ratio.SetMarkerSize(2)
+            Graph_Ratio.GetYaxis().SetRangeUser(0.0,0.2)
             Graph_Ratio.GetXaxis().SetTitle(XaxisT)
+        #    Graph_Ratio.GetYaxis().SetRangeUser(0, Graph_Ratio.GetMaximum()*5)
             Graph_Ratio.Draw()
             canvas_Ratio.SaveAs("Ratio_"+Title+RootName+"_link"+str(link)+"_ch_"+str(linkChannel)+".pdf")
 
             OutFile=TFile("outFile_"+RootName+"_link"+str(link)+"_ch_"+str(linkChannel)+".root","RECREATE")
-            OutFile.WriteObject(Graph_Integral,"Graph_Integral")
-            OutFile.WriteObject(Graph_Integral_RMS,"Graph_Integral_RMS")
+            OutFile.WriteObject(Graph_PulseWidth,"Graph_PulseWidth")
+            OutFile.WriteObject(Graph_PulseWidth_RMS,"Graph_PulseWidth_RMS")
             OutFile.WriteObject(Graph_Ratio,"Graph_Ratio")
             OutFile.Close()
+
 
 
 
@@ -356,29 +364,29 @@ if Do_Charge_vs_Amplitude:
     low=3
     high=11
     freq=1
-
-
+    
+    
     Fname1="_FRI_Feb26_AMP_Var/FRI_Feb26_Delay3_WID4_AMP"
     Fname2=".txt"
-    RootName="_PulseIntegral_Delay3_WID4_AMP"
+    RootName="_PulseWidth_Delay3_WID4_AMP"
     Measure_Integral(Fname1,Fname2, Title, XaxisT,low,high,freq,RootName)
-
+    
     Fname1="_FRI_Feb26_AMP_Var/FRI_Feb26_Delay3_WID10_AMP"
     Fname2=".txt"
-    RootName="_PulseIntegral_Delay3_WID10_AMP"
+    RootName="_PulseWidth_Delay3_WID10_AMP"
     Measure_Integral(Fname1,Fname2, Title, XaxisT,low,high,freq,RootName)
-
-
+    
+    
     Fname1="_FRI_Feb26_AMP_Var/FRI_Feb26_Delay3_WID22_AMP"
     Fname2=".txt"
-    RootName="_PulseIntegral_Delay3_WID22_AMP"
+    RootName="_PulseWidth_Delay3_WID22_AMP"
     Measure_Integral(Fname1,Fname2, Title, XaxisT,low,high,freq,RootName)
 
 
 ####################################################################################################################################
 #       Amplitude v.s. pulse width setting
 ####################################################################################################################################
-Do_Charge_vs_Width=0
+Do_Charge_vs_Width=1
 ###
 if Do_Charge_vs_Width:
     Title="Width"
@@ -386,35 +394,22 @@ if Do_Charge_vs_Width:
     low=4
     high=24
     freq=2
-
-#    Fname1="BigFRIDAY/Friday_WID_AMP0p1/Fri_AMP0p1_WID"
-#    Fname2=".txt"
-#    RootName="fc_vs_width_AMP1.root"
-#    Measure_Integral(Fname1,Fname2, Title, XaxisT,low,high,freq,RootName)
-
+    
+    #    Fname1="BigFRIDAY/Friday_WID_AMP0p1/Fri_AMP0p1_WID"
+    #    Fname2=".txt"
+    #    RootName="fc_vs_width_AMP1.root"
+    #    Measure_Integral(Fname1,Fname2, Title, XaxisT,low,high,freq,RootName)
+    
     Fname1="_FRI_Feb26_WID_Var/FRI_Feb26_Delay3_AMP5_WID"
     Fname2=".txt"
-    RootName="_PulseIntegral_Delay3_AMP5_WID"
+    RootName="_PulseWidth_Delay3_AMP5_WID"
     Measure_Integral(Fname1,Fname2, Title, XaxisT,low,high,freq,RootName)
-
-
+    
+    
     Fname1="_FRI_Feb26_WID_Var/FRI_Feb26_Delay3_AMP9_WID"
     Fname2=".txt"
-    RootName="_PulseIntegral_Delay3_AMP5_WID"
+    RootName="_PulseWidth_Delay3_AMP9_WID"
     Measure_Integral(Fname1,Fname2, Title, XaxisT,low,high,freq,RootName)
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
