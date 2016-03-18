@@ -170,10 +170,10 @@ def Measure_Integral(Fname1,Fname2,Title, XaxisT,low,high,freq,RootName):
 
     FNumber=int((high-low)/freq)
 
-    LINK=[3]
+    LINK=[19]
     #    LINK=[15,16,17,18,19]
     #    LINKkChannel=[0,1,2,3,4,5]
-    LINKkChannel=[5]
+    LINKkChannel=[2]
     for linkChannel in LINKkChannel:
         for link in LINK:
 

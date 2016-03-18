@@ -199,7 +199,7 @@ def Measure_Integral(Fname1,Fname2,Title, XaxisT,low,high,freq,RootName):
                 data = getData(f)
 #                tdc = getTDCValues(f)
 
-                M=TH1F(Fname,Fname,100000,0,1000000)
+                M=TH1F(Fname,Fname,10000,0,1000000)
                 x = array("d", xrange(0,1001))
                 y = array("d", xrange(0,1001))
                 
