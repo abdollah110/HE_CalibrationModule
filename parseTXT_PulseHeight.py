@@ -199,7 +199,7 @@ def Measure_Integral(Fname1,Fname2,Title, XaxisT,low,high,freq,RootName):
                 data = getData(f)
 #                tdc = getTDCValues(f)
 
-                M=TH1F(Fname,Fname,2000,0,1000000)
+                M=TH1F(Fname,Fname,100000,0,1000000)
                 x = array("d", xrange(0,1001))
                 y = array("d", xrange(0,1001))
                 
@@ -216,7 +216,8 @@ def Measure_Integral(Fname1,Fname2,Title, XaxisT,low,high,freq,RootName):
 
                         adcValue=data[event][link][BX][linkChannel]
                         if BX < 15 : pedSum += adcValue
-                        if BX > 19 and  BX < 25: sigSum += adcValue
+                        if BX > 19 and  BX < 27: sigSum += adcValue
+#                        if BX > 19 and  BX < 25: sigSum += adcValue                        
                         xSingleEv[BX]=BX
                         ySingleEv[BX]=adcValue
                 
@@ -235,7 +236,8 @@ def Measure_Integral(Fname1,Fname2,Title, XaxisT,low,high,freq,RootName):
         #            scanvas.SaveAs("singleEv_"+str(iAmp)+"_"+str(event)+".pdf")
 
                     Pedestal=pedSum/15.
-                    y[event]= sigSum- Pedestal*5
+                    y[event]= sigSum- Pedestal*7
+#                    y[event]= sigSum- Pedestal*5                    
                     M.Fill(y[event])
 
                 histMean= M.GetMean()
@@ -253,10 +255,16 @@ def Measure_Integral(Fname1,Fname2,Title, XaxisT,low,high,freq,RootName):
                 M.Fit(mfit, "R0","")
                 FitParam=mfit.GetParameters()
         #        FitParErr=mfit.GetParError()
+        
                 integral= round(FitParam[1],4)
-                integral_RMS= round(FitParam[2],4)
                 integralErr= round(mfit.GetParError(1),4)
+                if FitParam[1]/histMean < 0.9  or  FitParam[1]/histMean > 1.1 :   integral= histMean ; integralErr= 0
+                
+                integral_RMS= round(FitParam[2],4)
                 integral_RMSErr= round(mfit.GetParError(2),4)
+                if round(FitParam[2],4)/histRMS  < 0.9 or round(FitParam[2],4)/histRMS  > 1.1  : integral_RMS= histRMS ; integral_RMSErr= 0
+        
+                
                 print "iAmp=", iAmp, "   integral= ", integral,  "   integral_RMS=", integral_RMS
 
 
@@ -353,23 +361,25 @@ Do_Charge_vs_Amplitude=1
 if Do_Charge_vs_Amplitude:
     Title="Height"
     XaxisT="height * 0.1"
-    low=3
+    low=2
     high=11
     freq=1
 
 
-    Fname1="_FRI_Feb26_AMP_Var/FRI_Feb26_Delay3_WID4_AMP"
+#    Fname1="_FRI_Feb26_AMP_Var/FRI_Feb26_Delay3_WID4_AMP"
+    Fname1="_March16_ComparePinDiode_SIPM_AmpVar/WED_March16_Delay3_WID4_AMP"
     Fname2=".txt"
     RootName="_PulseIntegral_Delay3_WID4_AMP"
     Measure_Integral(Fname1,Fname2, Title, XaxisT,low,high,freq,RootName)
 
-    Fname1="_FRI_Feb26_AMP_Var/FRI_Feb26_Delay3_WID10_AMP"
-    Fname2=".txt"
-    RootName="_PulseIntegral_Delay3_WID10_AMP"
-    Measure_Integral(Fname1,Fname2, Title, XaxisT,low,high,freq,RootName)
+#    Fname1="_FRI_Feb26_AMP_Var/FRI_Feb26_Delay3_WID10_AMP"
+#    Fname2=".txt"
+#    RootName="_PulseIntegral_Delay3_WID10_AMP"
+#    Measure_Integral(Fname1,Fname2, Title, XaxisT,low,high,freq,RootName)
 
 
-    Fname1="_FRI_Feb26_AMP_Var/FRI_Feb26_Delay3_WID22_AMP"
+#    Fname1="_FRI_Feb26_AMP_Var/FRI_Feb26_Delay3_WID22_AMP"
+    Fname1="_March16_ComparePinDiode_SIPM_AmpVar/WED_March16_Delay3_WID22_AMP"
     Fname2=".txt"
     RootName="_PulseIntegral_Delay3_WID22_AMP"
     Measure_Integral(Fname1,Fname2, Title, XaxisT,low,high,freq,RootName)
@@ -392,15 +402,17 @@ if Do_Charge_vs_Width:
 #    RootName="fc_vs_width_AMP1.root"
 #    Measure_Integral(Fname1,Fname2, Title, XaxisT,low,high,freq,RootName)
 
-    Fname1="_FRI_Feb26_WID_Var/FRI_Feb26_Delay3_AMP5_WID"
+#    Fname1="_FRI_Feb26_WID_Var/FRI_Feb26_Delay3_AMP5_WID"
+    Fname1="_March16_ComparePinDiode_SIPM_WidVar/WED_March16_Delay3_AMP5_WID"
     Fname2=".txt"
     RootName="_PulseIntegral_Delay3_AMP5_WID"
     Measure_Integral(Fname1,Fname2, Title, XaxisT,low,high,freq,RootName)
 
 
-    Fname1="_FRI_Feb26_WID_Var/FRI_Feb26_Delay3_AMP9_WID"
+#    Fname1="_FRI_Feb26_WID_Var/FRI_Feb26_Delay3_AMP9_WID"
+    Fname1="_March16_ComparePinDiode_SIPM_WidVar/WED_March16_Delay3_AMP9_WID"
     Fname2=".txt"
-    RootName="_PulseIntegral_Delay3_AMP5_WID"
+    RootName="_PulseIntegral_Delay3_AMP9_WID"
     Measure_Integral(Fname1,Fname2, Title, XaxisT,low,high,freq,RootName)
 
 

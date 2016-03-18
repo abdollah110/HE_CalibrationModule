@@ -191,10 +191,10 @@ def Measure_Integral(Fname1,Fname2,Title, XaxisT,low,high,freq,RootName):
 #    xIntegral_RMS=[]
 #    yIntegral_RMS=[]
 
-    LINK=[19]
-#    LINK=[15,16,17,18,19]
+#    LINK=[15]
+    LINK=[15,16,17,18,19.20]
 #    LINKkChannel=[0,1,2,3,4,5]
-    LINKkChannel=[2]
+    LINKkChannel=[4]
     for linkChannel in LINKkChannel:
         for link in LINK:
             xIntegral=array("d",xrange(0,FNumber))
@@ -312,12 +312,13 @@ def Measure_Integral(Fname1,Fname2,Title, XaxisT,low,high,freq,RootName):
             Graph_TDCErDown= TGraph(len(xIntegral), xIntegral,yIntegralErrDown)
             
             canvas_TDC = MakeCanvas("can1","can1",800,800)
-            Graph_TDC.SetTitle("TDC vs. Pulse  "+Title)
+            Graph_TDC.SetTitle("")
             Graph_TDC.SetMarkerStyle(22)
             Graph_TDC.SetMarkerColor(3)
             Graph_TDC.SetMarkerSize(2)
             Graph_TDC.GetXaxis().SetTitle(XaxisT)
             Graph_TDC.GetYaxis().SetRangeUser(0, 30)
+            Graph_TDC.GetYaxis().SetTitle("TDC [ns]")
             Graph_TDC.Draw()
             Graph_TDCErUp.Draw("same")
             Graph_TDCErDown.Draw("same")
@@ -391,7 +392,7 @@ if Do_TDC:
 ##########################################################################################
 # This part is used for the computation of the Time vs Amplitude for different Shunt Values
 ##########################################################################################
-Do_Shunt=1
+Do_Shunt=0
 if Do_Shunt:
     Fname1="_MON_Feb29_TDCvsAPM_Shunt_TDCTHR/MON_Feb29_WID10_Delay3_TDCThre8_Sunt1_AMP"
     Fname2=".txt"
@@ -432,14 +433,14 @@ if Do_Shunt:
     ##########################################################################################
     # This part is used for the computation of the Time vs Amplitude for different for different delay setting
     ##########################################################################################
-Do_Delay=0
+Do_Delay=1
 if Do_Delay:
     Fname1="_FRI_Feb26_TDC_vs_Delay/FRI_Feb26_TDCThre8_Sunt1_AMP8_WID10_Delay"
     Fname2=".txt"
     Title="TDC"
     XaxisT="delay [ns]"
     low=3
-    high=23
+    high=25
     freq=2
     RootName="outRoot_TDCvsDelay.root"
     Measure_Integral(Fname1,Fname2, Title, XaxisT,low,high,freq,RootName)

@@ -37,9 +37,9 @@ def SupreImpose3Objects(File, Graph,rangelow,rangehigh,Xaxis,Yaxis,Title,leg0,le
     gr0.GetYaxis().SetLabelSize(0.035)
     gr0.GetYaxis().SetTitleOffset(2)
     gr0.GetYaxis().SetTitle(Yaxis)
-    gr0.SetLineColor(1)
+    gr0.SetLineColor(3)
     gr0.SetLineWidth(3)
-    gr0.SetMarkerColor(1)
+    gr0.SetMarkerColor(3)
     gr0.SetMarkerSize(1.5)
     gr0.SetMarkerStyle(23)
     gr0.Draw()
@@ -121,9 +121,9 @@ if Do_TDC:
 
 Do_Shunt=0
 if Do_Shunt:
-    shunt0 = TFile("ROOT_Compare/outFile_WID10_Delay3_TDCThre8_Sunt1_AMP_link19_ch_2.root")
-    shunt16 = TFile("ROOT_Compare/outFile_WID10_Delay3_TDCThre8_Sunt1Over6_AMP_link19_ch_2.root")
-    shunt30 = TFile("ROOT_Compare/outFile_WID10_Delay3_TDCThre8_Sunt1Over11_AMP_link19_ch_2.root")
+    shunt0 = TFile("ROOT_Compare/outFile_WID10_Delay3_TDCThre8_Sunt1_AMP_link3_ch_0.root")
+    shunt16 = TFile("ROOT_Compare/outFile_WID10_Delay3_TDCThre8_Sunt1Over6_AMP_link3_ch_0.root")
+    shunt30 = TFile("ROOT_Compare/outFile_WID10_Delay3_TDCThre8_Sunt1Over11_AMP_link3_ch_0.root")
     FileNames["Shunt"]=[shunt0,shunt16,shunt30]
 
 
@@ -146,11 +146,11 @@ if Do_Shunt:
 #####################################################################################################
 #####################################################################################################
 #####################################################################################################
-Do_SuperImpose_PulseIntegral_AMP=0
+Do_SuperImpose_PulseIntegral_AMP=1
 if Do_SuperImpose_PulseIntegral_AMP:
-    tdc8 = TFile("ROOT_Compare/fc_vs_width_AMP5.root")
-    tdc128 = TFile("ROOT_Compare/fc_vs_width_AMP5.root")
-    tdc248 = TFile("ROOT_Compare/fc_vs_width_AMP9.root")
+    tdc8 = TFile("ROOT_Compare/outFile__PulseIntegral_Delay3_AMP5_WID_link3_ch_0.root")
+    tdc128 = TFile("ROOT_Compare/outFile__PulseIntegral_Delay3_AMP5_WID_link3_ch_0.root")
+    tdc248 = TFile("ROOT_Compare/outFile__PulseIntegral_Delay3_AMP9_WID_link3_ch_0.root")
     FileNames["TDC"]=[tdc8,tdc128,tdc248]
 
     Title="Charge v.s. Pulse Width Setting"
@@ -159,21 +159,21 @@ if Do_SuperImpose_PulseIntegral_AMP:
     leg0="Amplitude = 0.5"
     leg1="Amplitude = 0.5"
     leg2="Amplitude = 0.9"
-    SupreImpose3Objects(FileNames["TDC"],"Graph_Integral",14,350000,Xaxis,Yaxis,Title,leg0,leg1,leg2,"fc_WIDTH_Integral.pdf")
+    SupreImpose3Objects(FileNames["TDC"],"Graph_Integral",14,40000,Xaxis,Yaxis,Title,leg0,leg1,leg2,"SI_PulseIntegral_Delay3_vs_WID_link3_ch_0.pdf")
     Yaxis="Charge RMS [fc]"
     Title="Charge RMS v.s. Pulse Width Setting"
-    SupreImpose3Objects(FileNames["TDC"],"Graph_Integral_RMS",0,16000,Xaxis,Yaxis,Title,leg0,leg1,leg2,"fc_WIDTH_Integral_RMS.pdf")
+    SupreImpose3Objects(FileNames["TDC"],"Graph_Integral_RMS",0,1200,Xaxis,Yaxis,Title,leg0,leg1,leg2,"SI_PulseIntegral_RMS_Delay3_vs_WID_link3_ch_0.pdf")
     Yaxis="RMS/Charge"
     Title="Ratio CHarge RMS and Charge v.s. Pulse Width Setting"
-    SupreImpose3Objects(FileNames["TDC"],"Graph_Ratio",0,.5,Xaxis,Yaxis,Title,leg0,leg1,leg2,"fc_WIDTH_Ratio.pdf")
+    SupreImpose3Objects(FileNames["TDC"],"Graph_Ratio",0,.5,Xaxis,Yaxis,Title,leg0,leg1,leg2,"SI_PulseIntegral_Ratio_Delay3_vs_WID_link3_ch_0.pdf")
 
 #####################################################################################################
-Do_SuperImpose_PulseIntegral_WID=0
+Do_SuperImpose_PulseIntegral_WID=1
 if Do_SuperImpose_PulseIntegral_WID:
 
-    tdc8 = TFile("ROOT_Compare/fc_vs_amplitude_WID4.root")
-    tdc128 = TFile("ROOT_Compare/fc_vs_amplitude_WID10.root")
-    tdc248 = TFile("ROOT_Compare/fc_vs_amplitude_WID22.root")
+    tdc8 = TFile("ROOT_Compare/outFile__PulseIntegral_Delay3_WID4_AMP_link3_ch_0.root")
+    tdc128 = TFile("ROOT_Compare/outFile__PulseIntegral_Delay3_WID4_AMP_link3_ch_0.root")
+    tdc248 = TFile("ROOT_Compare/outFile__PulseIntegral_Delay3_WID22_AMP_link3_ch_0.root")
     FileNames["TDC"]=[tdc8,tdc128,tdc248]
 
     Title="Charge v.s. Pulse Amplitude Setting"
@@ -182,22 +182,22 @@ if Do_SuperImpose_PulseIntegral_WID:
     leg0="Width = 4 ns"
     leg1="Width = 10 ns"
     leg2="Width = 22 ns"
-    SupreImpose3Objects(FileNames["TDC"],"Graph_Integral",14,400000,Xaxis,Yaxis,Title,leg0,leg1,leg2,"fc_AMP_Integral.pdf")
+    SupreImpose3Objects(FileNames["TDC"],"Graph_Integral",14,40000,Xaxis,Yaxis,Title,leg0,leg1,leg2,"SI_PulseIntegral_Delay3_vs_AMP_link3_ch_0.pdf")
     Yaxis="Charge RMS [fc]"
     Title="Charge RMS v.s. Pulse Amplitude Setting"
-    SupreImpose3Objects(FileNames["TDC"],"Graph_Integral_RMS",0,12000,Xaxis,Yaxis,Title,leg0,leg1,leg2,"fc_AMP_Integral_RMS.pdf")
+    SupreImpose3Objects(FileNames["TDC"],"Graph_Integral_RMS",0,1200,Xaxis,Yaxis,Title,leg0,leg1,leg2,"SI_PulseIntegral_RMS_Delay3_vs_AMP_link3_ch_0.pdf")
     Yaxis="RMS/Charge"
     Title="Ratio CHarge RMS and Charge v.s. Pulse Amplitude Setting"
-    SupreImpose3Objects(FileNames["TDC"],"Graph_Ratio",0,.5,Xaxis,Yaxis,Title,leg0,leg1,leg2,"fc_AMP_Ratio.pdf")
+    SupreImpose3Objects(FileNames["TDC"],"Graph_Ratio",0,.5,Xaxis,Yaxis,Title,leg0,leg1,leg2,"SI_PulseIntegral_Ratio_Delay3_vs_AMP_link3_ch_0.pdf")
 
 ####################################################################################################
 #   Comapring the pulse Width v.s. width
 #####################################################################################################
 Do_SuperImpose_PulseIntegral_WIDTH=1
 if Do_SuperImpose_PulseIntegral_WIDTH:
-    tdc8 = TFile("ROOT_Compare/outFile__PulseWidth_Delay3_AMP5_WID_link19_ch_2.root")
-    tdc128 = TFile("ROOT_Compare/outFile__PulseWidth_Delay3_AMP5_WID_link19_ch_2.root")
-    tdc248 = TFile("ROOT_Compare/outFile__PulseWidth_Delay3_AMP9_WID_link19_ch_2.root")
+    tdc8 = TFile("ROOT_Compare/outFile__PulseWidth_Delay3_AMP5_WID_link3_ch_0.root")
+    tdc128 = TFile("ROOT_Compare/outFile__PulseWidth_Delay3_AMP5_WID_link3_ch_0.root")
+    tdc248 = TFile("ROOT_Compare/outFile__PulseWidth_Delay3_AMP9_WID_link3_ch_0.root")
     
     
     FileNames["TDC"]=[tdc8,tdc128,tdc248]
@@ -208,22 +208,22 @@ if Do_SuperImpose_PulseIntegral_WIDTH:
     leg0="Amplitude = 0.5"
     leg1="Amplitude = 0.5"
     leg2="Amplitude = 0.9"
-    SupreImpose3Objects(FileNames["TDC"],"Graph_PulseWidth",0,1,Xaxis,Yaxis,Title,leg0,leg1,leg2,"PulseWidth_Delay3_AMP_WID_link19_ch_2.pdf")
+    SupreImpose3Objects(FileNames["TDC"],"Graph_PulseWidth",0,1,Xaxis,Yaxis,Title,leg0,leg1,leg2,"SI_PulseWidth_Delay3_vs_WID_link3_ch_0.pdf")
     Yaxis="Pulse Width [(BX) x 25 ns]"
     Title="Charge RMS v.s. Pulse Width Setting"
-    SupreImpose3Objects(FileNames["TDC"],"Graph_PulseWidth_RMS",0,.2,Xaxis,Yaxis,Title,leg0,leg1,leg2,"PulseWidth_RMS_Delay3_AMP_WID_link19_ch_2.pdf")
+    SupreImpose3Objects(FileNames["TDC"],"Graph_PulseWidth_RMS",0,.2,Xaxis,Yaxis,Title,leg0,leg1,leg2,"SI_PulseWidth_RMS_Delay3_vs_WID_link3_ch_0.pdf")
     Yaxis="RMS Width / Width"
     Title="Ratio CHarge RMS and Charge v.s. Pulse Width Setting"
-    SupreImpose3Objects(FileNames["TDC"],"Graph_Ratio",0,.2,Xaxis,Yaxis,Title,leg0,leg1,leg2,"PulseWidth_Ratio_Delay3_AMP_WID_link19_ch_2.pdf")
+    SupreImpose3Objects(FileNames["TDC"],"Graph_Ratio",0,.2,Xaxis,Yaxis,Title,leg0,leg1,leg2,"SI_PulseWidth_Ratio_Delay3_vs_WID_link3_ch_0.pdf")
 
 ####################################################################################################
 #   Comapring the pulse Width  v.s. Integral
 #####################################################################################################
-Do_SuperImpose_PulseIntegral_AMP=0
+Do_SuperImpose_PulseIntegral_AMP=1
 if Do_SuperImpose_PulseIntegral_AMP:
-    tdc8 = TFile("ROOT_Compare/outFile__PulseWidth_Delay3_WID4_AMP_link19_ch_2.root")
-    tdc128 = TFile("ROOT_Compare/outFile__PulseWidth_Delay3_WID10_AMP_link19_ch_2.root")
-    tdc248 = TFile("ROOT_Compare/outFile__PulseWidth_Delay3_WID22_AMP_link19_ch_2.root")
+    tdc8 = TFile("ROOT_Compare/outFile__PulseWidth_Delay3_WID4_AMP_link3_ch_0.root")
+    tdc128 = TFile("ROOT_Compare/outFile__PulseWidth_Delay3_WID4_AMP_link3_ch_0.root")
+    tdc248 = TFile("ROOT_Compare/outFile__PulseWidth_Delay3_WID22_AMP_link3_ch_0.root")
     
     
     FileNames["TDC"]=[tdc8,tdc128,tdc248]
@@ -234,18 +234,12 @@ if Do_SuperImpose_PulseIntegral_AMP:
     leg0="Width = 4 ns"
     leg1="Width = 10 ns"
     leg2="Width = 22 ns"
-    SupreImpose3Objects(FileNames["TDC"],"Graph_PulseWidth",0,1,Xaxis,Yaxis,Title,leg0,leg1,leg2,"PulseWidth_Delay3_WID_AMP_link19_ch_2.pdf")
+    SupreImpose3Objects(FileNames["TDC"],"Graph_PulseWidth",0,1,Xaxis,Yaxis,Title,leg0,leg1,leg2,"SI_PulseWidth_Delay3_vs_AMP_link3_ch_0.pdf")
     Yaxis="Pulse Width RMS [(BX) x 25 ns]"
     Title="Charge RMS v.s. Pulse Width Setting"
-    SupreImpose3Objects(FileNames["TDC"],"Graph_PulseWidth_RMS",0,.2,Xaxis,Yaxis,Title,leg0,leg1,leg2,"PulseWidth_RMS_Delay3_WID_AMP_link19_ch_2.pdf")
+    SupreImpose3Objects(FileNames["TDC"],"Graph_PulseWidth_RMS",0,.2,Xaxis,Yaxis,Title,leg0,leg1,leg2,"SI_PulseWidth_RMS_Delay3_vs_AMP_link3_ch_0.pdf")
     Yaxis="RMS Width / Width"
     Title="Ratio CHarge RMS and Charge v.s. Pulse Width Setting"
-    SupreImpose3Objects(FileNames["TDC"],"Graph_Ratio",0,.2,Xaxis,Yaxis,Title,leg0,leg1,leg2,"PulseWidth_Ratio_Delay3_WID_AMP_link19_ch_2.pdf")
+    SupreImpose3Objects(FileNames["TDC"],"Graph_Ratio",0,.2,Xaxis,Yaxis,Title,leg0,leg1,leg2,"SI_PulseWidth_Ratio_Delay3_vs_AMP_link3_ch_0.pdf")
 
 
-
-
-
-
-    
-    
