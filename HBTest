@@ -1,0 +1,14 @@
+ssh -XY abdollah@cms904usr.cern.ch
+ssh -XY hcal904daq04
+
+hcal904daq04 ~ $ ngFEC.exe -c -p 64400
+ client version:0.0.12-16
+
+put HB0a-bkp_pwr_enable 0
+put HB0a-bkp_pwr_enable 1
+put HB0a-bkp_reset 1
+put HB0a-bkp_reset 0
+
+get HB0a-bkp_pwr_bad
+
+
