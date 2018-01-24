@@ -12,3 +12,29 @@ put HB0a-bkp_reset 0
 get HB0a-bkp_pwr_bad
 
 
+tget ccmserver-g fns7G
+> 
+tget ccmserver-g fns7G # 
+ WRSNLo ccmserver-g running
+      WRSNLo hbfec5-ig running
+           WRSNLo hbfec5-fg running
+                WRSNLo HB0-lg running
+                     WRSNLo HB0a-lg link_ping
+                          WRSONLQ HB0a-pg running
+                               WRSONQG HB0-1-g running
+                               WRSONLQG HB0-1s-sg running
+                               WRSONLQ HB0-2-g running
+                               WRSONLQG HB0-2s-sg running
+                          ROLQG HB0a-cg running
+                     RSLo HB0b-lg link_ping
+                          RSOLQ HB0b-pg running
+                               ROLQ HB0-3-g running
+                               ROLQG HB0-3s-sg running
+                               ROLQ HB0-calib-g running
+                               ROLQ HB0-4-g running
+                               ROLQG HB0-4s-sg running
+                          ROLQG HB0b-cg running
+
+
+
+
