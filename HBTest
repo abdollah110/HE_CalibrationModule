@@ -1,6 +1,13 @@
 ssh -XY abdollah@cms904usr.cern.ch
 ssh -XY hcal904daq04
 
+sudo -u hcalpro -s
+~/start_ngccm_hb904_4.sh 
+
+
+
+
+
 hcal904daq04 ~ $ ngFEC.exe -c -p 64400
  client version:0.0.12-16
 
